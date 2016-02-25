@@ -1,0 +1,101 @@
+        public static List<string> FindAllPalindromePair(List<string> dictionary)
+        {
+            Dictionary<string, string> reversedSource = new Dictionary<string, string>();
+            Dictionary<string, List<string>> modified = new Dictionary<string, List<string>>();
+            List<string> res = new List<string>();
+            foreach (var w in dictionary)
+            {
+                string rs = Reverse(w);
+                if (modified.ContainsKey(rs))
+                {
+                    foreach (var s in modified[rs])
+                    {
+                        res.Add(string.Concat(w, ",", s));
+                    }
+                }
+
+                reversedSource.Add(rs, w);
+
+                if (reversedSource.ContainsKey(w) && reversedSource[w] != w)
+                {
+                    res.Add(string.Concat(reversedSource[w], ",", w));
+                }
+
+                for (int j = 0; j < w.Length - 1; j++)
+                {
+                    if (IsPalindrome(0, j, w))
+                    {
+                        string modi = w.Substring(j + 1);
+                        ModifiedMatchSource(modi, w, reversedSource, modified, res);
+                    }
+                }
+
+
+                for (int i = 1; i < w.Length; i++)
+                {
+                    if (IsPalindrome(i, w.Length - 1, w))
+                    {
+                        string modi = w.Substring(0, i);
+                        ModifiedMatchSource(modi, w, reversedSource, modified, res);
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        public static void ModifiedMatchSource(string modi, string source, Dictionary<string, string> reversedSource, Dictionary<string, List<string>> modified, List<string> res)
+        {
+            if (reversedSource.ContainsKey(modi))
+            {
+                if(!res.Contains(string.Concat(reversedSource[modi], ",", source)))
+                {
+                  res.Add(string.Concat(reversedSource[modi], ",", source));
+                }
+            }
+
+            else
+            {
+                if (!modified.ContainsKey(modi))
+                {
+                    modified.Add(modi, new List<string>());
+                }
+
+                modified[modi].Add(source);
+            }
+        }
+
+        public static bool IsPalindrome(int start, int end, string s)
+        {
+            while (start < end)
+            {
+                if (s[start++] != s[end--])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool IsPalindrome(string a)
+        {
+            int i = 0, j = a.Length - 1;
+            while(i<j)
+            {
+                if(a[i++]!=a[j--])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+
+        public static string Reverse(string s)
+        {
+            char[] a = s.ToCharArray();
+            Array.Reverse(a);
+            return new string(a);
+        }
